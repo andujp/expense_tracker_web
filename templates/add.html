@@ -1,27 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Add Transaction</title>
+  <meta charset="utf-8">
+  <title>Add Transaction</title>
 </head>
 <body>
-    <h1>Add Transaction</h1>
+  <h1>Add Transaction</h1>
 
-    <form method="post">
-        <p>
-            Amount:
-            <input type="text" name ="amount">
-        </p>
+  <form method="post">
+    <p>
+      Date (YYYY-MM-DD):
+      <input name="date" placeholder="2025-12-30" required>
+    </p>
 
-        <p>
-            Category:
-            <input type="text" name="category">
-        </p>
+    <p>
+      Type:
+      <select name="ttype">
+        <option value="expense">expense</option>
+        <option value="income">income</option>
+      </select>
+    </p>
 
-        <button type="submit">Save</button>
-    </form>
+    <p>
+      Amount:
+      <input name="amount" placeholder="12.50" required>
+    </p>
 
-    <br>
-    <a href="/"> Back to home</a>
+    <p>
+      Category:
+      <input name="category" placeholder="Food" required>
+    </p>
+
+    <p>
+      Merchant:
+      <input name="merchant" placeholder="Chipotle">
+    </p>
+
+    <p>
+      Note:
+      <input name="note" placeholder="Lunch">
+    </p>
+
+    <button type="submit">Save</button>
+  </form>
+
+  <br>
+  <a href="/">Back to home</a>
 </body>
 </html>
