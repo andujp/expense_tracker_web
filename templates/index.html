@@ -6,17 +6,51 @@
 </head>
 <body>
   <h1>Expense Tracker</h1>
-
   <a href="/add">Add Transaction</a>
+
+
+<h2>Summary</h2>
+<p><a href="{{ url_for('months') }}">Monthly View</a></p>
+<p><strong>Total Income:</strong> ${{ "%.2f"|format(total_income) }}</p>
+<p><strong>Total Expenses:</strong> ${{ "%.2f"|format(total_expense) }}</p>
+<p><strong>Net:</strong> ${{ "%.2f"|format(net) }}</p>
+
+<h3>Expenses by Category</h3>
+{% if by_category %}
+  <ul>
+    {% for cat, amt in by_category.items() %}
+      <li>{{ cat }}: ${{ "%.2f"|format(amt) }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No expense categories yet.</p>
+{% endif %}
+<hr>
 
   <h2>Transactions</h2>
 
-  {% if transactions %}
-    <ul>
-      {% for t in transactions %}
-        <li>${{ t.amount }} — {{ t.category }}</li>
+  {% if rows %}
+    <table border="1" cellpadding="6">
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>Category</th>
+        <th>Merchant</th>
+        <th>Note</th>
+      </tr>
+
+      {% for r in rows %}
+      <tr>
+        <td>{{ r["date"] }}</td>
+        <td>{{ r["ttype"] }}</td>
+        <td>{{ "%.2f"|format(r["amount"]) }}</td>
+        <td>{{ r["category"] }}</td>
+        <td>{{ r["merchant"] or "" }}</td>
+        <td>{{ r["note"] or "" }}</td>
+      </tr>
       {% endfor %}
-    </ul>
+    </table>
   {% else %}
     <p>No transactions yet.</p>
   {% endif %}
