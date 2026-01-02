@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Month {{ yyyy_mm }}</title>
+</head>
+<body>
+  <h1>Month: {{ yyyy_mm }}</h1>
+
+  <p>
+    <a href="{{ url_for('months') }}">All months</a> |
+    <a href="{{ url_for('month_view', yyyy_mm=prev_month) }}">← {{ prev_month }}</a> |
+    <a href="{{ url_for('month_view', yyyy_mm=next_month) }}">{{ next_month }} →</a>
+  </p>
+
+  <h2>Summary</h2>
+  <p><strong>Total Income:</strong> ${{ "%.2f"|format(total_income) }}</p>
+  <p><strong>Total Expenses:</strong> ${{ "%.2f"|format(total_expense) }}</p>
+  <p><strong>Net:</strong> ${{ "%.2f"|format(net) }}</p>
+
+  <h3>Expenses by Category</h3>
+  {% if by_category_rows %}
+    <ul>
+      {% for r in by_category_rows %}
+        <li>{{ r["category"] }}: ${{ "%.2f"|format(r["total"]) }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No expenses this month.</p>
+  {% endif %}
+
+  <h2>Transactions</h2>
+  {% if tx %}
+    <table border="1" cellpadding="6">
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>Category</th>
+        <th>Merchant</th>
+        <th>Note</th>
+      </tr>
+      {% for t in tx %}
+        <tr>
+          <td>{{ t["date"] }}</td>
+          <td>{{ t["ttype"] }}</td>
+          <td>${{ "%.2f"|format(t["amount"]) }}</td>
+          <td>{{ t["category"] }}</td>
+          <td>{{ t["merchant"] or "" }}</td>
+          <td>{{ t["note"] or "" }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>No transactions this month.</p>
+  {% endif %}
+</body>
+</html>
