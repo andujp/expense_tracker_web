@@ -1,17 +1,50 @@
 :root {
-  --bg: #09b6eb;
+  --bg-start: #09b6eb;
+  --bg-end: #7dd3fc;
+
   --card: #ffffff;
   --text: #111;
-  --muted: #ff0000;
+  --muted: #6b7280;
   --border: #e5e5e5;
+
+  --header-bg: #222;
+  --link: rgb(5, 224, 195);
+
+  --table-head: #f2f2f2;
+  --row-hover: #fafafa;
+
+  --btn-bg: #f3f3f3;
+  --btn-text: #111;
 }
+
+/* Dark mode overrides */
+body.dark {
+  --bg-start: #020617;
+  --bg-end: #0f172a;
+
+  --card: #0b1220;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --border: #1f2937;
+
+  --header-bg: #0b1220;
+  --link: #60a5fa;
+
+  --table-head: #111827;
+  --row-hover: rgba(255, 255, 255, 0.04);
+
+  --btn-bg: #111827;
+  --btn-text: #e5e7eb;
+}
+
 
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: var(--bg);
+  background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
   color: var(--text);
 }
+
 
 .container {
   max-width: 1000px;
@@ -20,7 +53,7 @@ body {
 }
 
 .header {
-  background: #222;
+  background: var(--header-bg, #222);
   color: white;
 }
 
@@ -44,10 +77,11 @@ body {
 }
 
 .nav a {
-  color: rgb(5, 224, 195);
+  color: var(--link, rgb(5, 224, 195));
   text-decoration: none;
   margin-right: 14px;
 }
+
 
 .nav a:hover {
   text-decoration: underline;
@@ -70,6 +104,31 @@ table {
   border: 1px solid var(--border);
 }
 
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin: 12px 0 20px 0;
+}
+
+td form button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #f3f3f3;
+  cursor: pointer;
+}
+td a {
+  margin-right: 10px;
+}
+
+
+.chart_card.chart-small {
+  width: 160px;       /* pick your size */
+  height: 160px;      /* pick your size */
+  margin: 0 auto; 
+}
+
 th, td {
   padding: 10px;
   border-bottom: 1px solid var(--border);
@@ -77,12 +136,13 @@ th, td {
 }
 
 th {
-  background: #4ff82d;
+  background: var(--table-head, #f2f2f2);
 }
 
 tr:hover td {
-  background: #91ff00;
+  background: var(--row-hover, #fafafa);
 }
+
 .form {
   background: var(--card);
   border: 1px solid var(--border);
@@ -118,9 +178,11 @@ input, select {
 
 button {
   padding: 10px 14px;
-  border: 0;
+  border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
+  background: var(--btn-bg, #f3f3f3);
+  color: var(--btn-text, var(--text));
 }
 
 .btn-secondary {
@@ -130,5 +192,22 @@ button {
   border-radius: 6px;
   text-decoration: none;
   color: var(--text);
-  background: #f3f3f3;
+  background: var(--btn-bg, #f3f3f3);
+}
+
+.theme-btn {
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.header-inner {
+  position: relative; /* lets us place the button inside header */
+}
+
+.floating-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
 }

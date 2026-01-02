@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Monthly View – Expense Tracker{% endblock %}
+
+{% block content %}
+  <h2>Trend</h2>
+
+  {% if months_labels and net_values %}
+    <div class="chart-card">
+      <canvas id="netLine"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const monthsLabels = {{ months_labels | tojson }};
+      const netValues = {{ net_values | tojson }};
+      const incomeValues = {{ income_values | tojson }};
+      const expenseValues = {{ expense_values | tojson }};
+
+      new Chart(document.getElementById("netLine"), {
+        type: "line",
+        data: {
+          labels: monthsLabels,
+          datasets: [
+            { label: "Net", data: netValues, tension: 0.25 },
+            { label: "Income", data: incomeValues, tension: 0.25 },
+            { label: "Expense", data: expenseValues, tension: 0.25 }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: "bottom" } }
+        }
+      });
+    </script>
+  {% else %}
+    <p>No monthly data to chart yet.</p>
+  {% endif %}
+
+  <h2>Months</h2>
+
+  {% if rows %}
+    <table>
+      <tr>
+        <th>Month</th>
+        <th>Income</th>
+        <th>Expense</th>
+        <th>Net</th>
+      </tr>
+      {% for r in rows %}
+        <tr>
+          <td>
+            <a href="{{ url_for('month_view', yyyy_mm=r['yyyy_mm']) }}">
+              {{ r['yyyy_mm'] }}
+            </a>
+          </td>
+          <td>${{ "%.2f"|format(r["income"]) }}</td>
+          <td>${{ "%.2f"|format(r["expense"]) }}</td>
+          <td>${{ "%.2f"|format(r["income"] - r["expense"]) }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>No transactions yet.</p>
+  {% endif %}
+{% endblock %}

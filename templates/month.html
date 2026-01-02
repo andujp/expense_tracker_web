@@ -1,11 +1,9 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Month {{ yyyy_mm }}</title>
-</head>
-<body>
-  <h1>Month: {{ yyyy_mm }}</h1>
+{% extends "base.html" %}
+
+{% block title %}Month {{ yyyy_mm }} – Expense Tracker{% endblock %}
+
+{% block content %}
+  <h2>Month: {{ yyyy_mm }}</h2>
 
   <p>
     <a href="{{ url_for('months') }}">All months</a> |
@@ -19,19 +17,49 @@
   <p><strong>Net:</strong> ${{ "%.2f"|format(net) }}</p>
 
   <h3>Expenses by Category</h3>
+
   {% if by_category_rows %}
     <ul>
       {% for r in by_category_rows %}
         <li>{{ r["category"] }}: ${{ "%.2f"|format(r["total"]) }}</li>
       {% endfor %}
     </ul>
+
+    <h3>Expense Breakdown (Pie)</h3>
+    <div class="chart-card.chart-small">
+      <canvas id="categoryPie"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const pieLabels = {{ chart_labels | tojson }};
+      const pieValues = {{ chart_values | tojson }};
+
+      new Chart(document.getElementById("categoryPie"), {
+        type: "pie",
+        data: {
+          labels: pieLabels,
+          datasets: [{
+            data: pieValues
+          }]
+        },
+        options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { position: "bottom" }
+              }
+        }
+      });
+    </script>
   {% else %}
     <p>No expenses this month.</p>
   {% endif %}
 
   <h2>Transactions</h2>
+
   {% if tx %}
-    <table border="1" cellpadding="6">
+    <table>
       <tr>
         <th>Date</th>
         <th>Type</th>
@@ -39,9 +67,20 @@
         <th>Category</th>
         <th>Merchant</th>
         <th>Note</th>
+        <th>Actions</th>
       </tr>
+<td>
+  <a href="{{ url_for('edit_tx', tx_id=t['id']) }}">Edit</a>
+
+  <form method="POST"
+        action="{{ url_for('delete_tx', tx_id=t['id']) }}"
+        style="display:inline;"
+        onsubmit="return confirm('Delete this transaction?');">
+    <button type="submit">Delete</button>
+  </form>
+</td>
       {% for t in tx %}
-        <tr>
+        <tr class="{{ 'income' if t['ttype'] == 'income' else 'expense' }}">
           <td>{{ t["date"] }}</td>
           <td>{{ t["ttype"] }}</td>
           <td>${{ "%.2f"|format(t["amount"]) }}</td>
@@ -49,10 +88,19 @@
           <td>{{ t["merchant"] or "" }}</td>
           <td>{{ t["note"] or "" }}</td>
         </tr>
+        <td>
+  <a href="{{ url_for('edit_tx', tx_id=t['id']) }}">Edit</a>
+
+  <form method="POST"
+        action="{{ url_for('delete_tx', tx_id=t['id']) }}"
+        style="display:inline;"
+        onsubmit="return confirm('Delete this transaction?');">
+    <button type="submit">Delete</button>
+  </form>
+</td>
       {% endfor %}
     </table>
   {% else %}
     <p>No transactions this month.</p>
   {% endif %}
-</body>
-</html>
+{% endblock %}

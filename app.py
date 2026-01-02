@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, abort
 import sqlite3
 from pathlib import Path
 from datetime import datetime
@@ -64,6 +64,46 @@ def home():
         by_category=by_category
     )
 
+@app.route("/delete/<int:tx_id>", methods =["POST"])
+def delete_tx(tx_id):
+    conn = get_db()
+    cur = conn.execute("DELETE FROM transactions where id = ?", (tx_id,))
+    conn.commit()
+    conn.close()
+
+    return redirect(request.referrer or url_for("home"))
+
+@app.route("/edit/<int:tx_id>", methods=["GET", "POST"])
+def edit_tx(tx_id):
+    conn = get_db()
+
+    if request.method == "POST":
+        date = request.form["date"].strip()
+        ttype = request.form["ttype"].strip()
+        amount = float(request.form["amount"])
+        category = request.form["category"].strip()
+        merchant = request.form.get("merchant", "").strip()
+        note = request.form.get("note", "").strip()
+
+        conn.execute("""
+            UPDATE transactions
+            SET date = ?, ttype = ?, amount = ?, category = ?, merchant = ?, note = ?
+            WHERE id = ?
+        """, (date, ttype, amount, category, merchant, note, tx_id))
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for("home"))
+
+    # GET: load existing transaction
+    tx = conn.execute("SELECT * FROM transactions WHERE id = ?", (tx_id,)).fetchone()
+    conn.close()
+
+    if tx is None:
+        abort(404)
+
+    return render_template("edit.html", tx=tx)
+
 @app.route("/add", methods=["GET", "POST"])
 def add():
     if request.method == "POST":
@@ -102,8 +142,18 @@ def months():
         ORDER BY yyyy_mm DESC
     """).fetchall()
     conn.close()
-
-    return render_template("months.html", rows=rows)
+    months_labels = [r["yyyy_mm"] for r in rows][::-1]
+    net_values = [(float(r["income"]) - float(r["expense"])) for r in rows][::-1]
+    income_values = [float(r["income"]) for r in rows][::-1]
+    expense_values = [float(r["expense"]) for r in rows][::-1]
+    return render_template(
+    "months.html",
+    rows=rows,
+    months_labels=months_labels,
+    net_values=net_values,
+    income_values=income_values,
+    expense_values=expense_values
+)
 
 
 @app.route("/month/<yyyy_mm>")
@@ -161,6 +211,7 @@ def month_view(yyyy_mm):
     # chart data (optional, for later)
     chart_labels = [r["category"] for r in by_category_rows]
     chart_values = [float(r["total"]) for r in by_category_rows]
+
 
     return render_template(
         "month.html",

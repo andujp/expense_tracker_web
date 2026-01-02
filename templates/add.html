@@ -1,50 +1,53 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Add Transaction</title>
-</head>
-<body>
-  <h1>Add Transaction</h1>
+{% extends "base.html" %}
 
-  <form method="post">
-    <p>
-      Date (YYYY-MM-DD):
-      <input name="date" placeholder="2025-12-30" required>
-    </p>
+{% block title %}Add Transaction – Expense Tracker{% endblock %}
 
-    <p>
-      Type:
-      <select name="ttype">
-        <option value="expense">expense</option>
-        <option value="income">income</option>
-      </select>
-    </p>
+{% block content %}
+  <h2>Add Transaction</h2>
 
-    <p>
-      Amount:
-      <input name="amount" placeholder="12.50" required>
-    </p>
+  <form method="POST" class="form">
+    <div class="grid">
+      <label>
+        Date
+        <input type="date" name="date" required value="{{ request.form.get('date', '') }}">
+      </label>
 
-    <p>
-      Category:
-      <input name="category" placeholder="Food" required>
-    </p>
+      <label>
+        Type
+        <select name="ttype" required>
+          <option value="expense" {% if request.form.get('ttype') == 'expense' %}selected{% endif %}>expense</option>
+          <option value="income" {% if request.form.get('ttype') == 'income' %}selected{% endif %}>income</option>
+        </select>
+      </label>
 
-    <p>
-      Merchant:
-      <input name="merchant" placeholder="Chipotle">
-    </p>
+      <label>
+        Amount
+        <input type="number" name="amount" step="0.01" min="0" required placeholder="0.00"
+               value="{{ request.form.get('amount', '') }}">
+      </label>
 
-    <p>
-      Note:
-      <input name="note" placeholder="Lunch">
-    </p>
+      <label>
+        Category
+        <input type="text" name="category" required placeholder="Food, Rent, Gas..."
+               value="{{ request.form.get('category', '') }}">
+      </label>
 
-    <button type="submit">Save</button>
+      <label>
+        Merchant (optional)
+        <input type="text" name="merchant" placeholder="Starbucks, Costco..."
+               value="{{ request.form.get('merchant', '') }}">
+      </label>
+
+      <label>
+        Note (optional)
+        <input type="text" name="note" placeholder="Any details..."
+               value="{{ request.form.get('note', '') }}">
+      </label>
+    </div>
+
+    <div class="actions">
+      <button type="submit">Save</button>
+      <a class="btn-secondary" href="{{ url_for('home') }}">Cancel</a>
+    </div>
   </form>
-
-  <br>
-  <a href="/">Back to home</a>
-</body>
-</html>
+{% endblock %}
